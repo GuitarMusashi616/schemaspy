@@ -16,6 +16,14 @@ $(document).ready(function() {
  
     table.buttons().container()
         .appendTo('#standard_table_wrapper .col-sm-6:eq(0)' );    	
+
+    $('#showCodeToggle').change(function() {
+        if (this.checked) {
+            showCode();
+        } else {
+            hideCode();
+        }
+    });
 } );
 
 function extractSqlComments(sql) {
@@ -29,14 +37,27 @@ function extractSqlComments(sql) {
     while ((match = regex.exec(sql)) !== null) {
         // Remove comment markers
         var comment = match[0];
-        
         // Trim the line breaks
         comment = comment.replace(/(\r?\n)+$/g, '');
-        
         comments.push(comment);
     }
 
     return comments;
+}
+
+function showCode() {
+	var editor = document.querySelector(".CodeMirror").CodeMirror;
+	var codeElement = document.getElementById("sql-script-codemirror");
+
+	editor.setValue(codeElement.textContent);
+}
+
+function hideCode() {
+	var editor = document.querySelector(".CodeMirror").CodeMirror;
+	var codeElement = document.getElementById("sql-script-codemirror");
+	var comments = extractSqlComments(codeElement.textContent);
+
+	editor.setValue(comments.join("\n\n"));
 }
 
 var codeElement = document.getElementById("sql-script-codemirror");
@@ -50,10 +71,11 @@ if (null != codeElement) {
 		lineNumbers: true,
 		matchBrackets: true,
 		autofocus: true,
-		readOnly: true
+        readOnly: true
 	});
 
-	var codeContent = editor.getValue();
-	var comments = extractSqlComments(codeContent);
-	editor.setValue(comments.join("\n\n"));
+	hideCode();
+	// var codeContent = editor.getValue();
+	// var comments = extractSqlComments(codeContent);
+	// editor.setValue(comments.join("\n\n"));
 }
